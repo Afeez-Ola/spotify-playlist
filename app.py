@@ -127,8 +127,10 @@ def index():
 
         playlist_created = True
         playlist_link = playlist["external_urls"]["spotify"]
-
-    return render_template("index.html", playlist_created=playlist_created, playlist_link=playlist_link)
+    try:
+        return render_template("index.html", playlist_created=playlist_created, playlist_link=playlist_link)
+    except:
+        return "Error"
 
 
 if __name__ == "__main__":
