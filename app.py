@@ -75,6 +75,7 @@ def search_tracks_in_spotify(spotify, top_100, year):
 
 
 playlist_created = False
+playlist = None
 
 
 def check_if_playlist_exists(spotify, username, playlist_name):
@@ -97,12 +98,13 @@ def create_playlist(spotify, username, playlist_name, track_ids):
         playlist_created = True
     else:
         print(f"Playlist '{playlist_name}' already exists.")
+    return playlist
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     playlist_created = False
-    playlist_link = None  # Declare the playlist_link variable
+    playlist_link = None
 
     if request.method == "POST":
         try:
@@ -110,7 +112,6 @@ def index():
             playlist_name = f"{date} Billboard Chart"
             year = int(date[:4])
         except ValueError:
-            # Handle the case when an invalid date format is entered
             date = None
             playlist_name = None
             year = None
@@ -123,15 +124,18 @@ def index():
 
         track_ids = search_tracks_in_spotify(spotify, top_100, year)
 
-        create_playlist(spotify, username, playlist_name, track_ids)
+        # Attempt to create the playlist
+        playlist = create_playlist(spotify, username, playlist_name, track_ids)
 
-        playlist_created = True
-        playlist_link = playlist["external_urls"]["spotify"]
-    try:
-        return render_template("index.html", playlist_created=playlist_created, playlist_link=playlist_link)
-    except:
-        return "Error"
+        if playlist is not None:
+            playlist_created = True
+            playlist_link = playlist["external_urls"]["spotify"]
+        print(playlist_link)
+    return render_template("index.html", playlist_created=playlist_created, playlist_link=playlist_link)
 
 
 if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0')
+    from waitress import serve
+
+    serve(app, host="0.0.0.0", port=5000)
+    # app.run(debug=False, host='0.0.0.0')
