@@ -1,3 +1,4 @@
+import gunicorn
 from flask import Flask, render_template, request
 import requests
 from bs4 import BeautifulSoup
@@ -133,9 +134,8 @@ def index():
         print(playlist_link)
     return render_template("index.html", playlist_created=playlist_created, playlist_link=playlist_link)
 
-
-if __name__ == "__main__":
-    from waitress import serve
-
-    serve(app, host="0.0.0.0", port=5000)
-    # app.run(debug=False, host='0.0.0.0')
+#
+# if __name__ == "__main__":
+#     from waitress import serve
+#     serve(app, host="0.0.0.0", port=5000)
+#     app.run(debug=False, host='0.0.0.0')
